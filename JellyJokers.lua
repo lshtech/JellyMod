@@ -3,10 +3,11 @@
 --- MOD_ID: JellyJokers
 --- MOD_AUTHOR: [JamesTheJellyfish]
 --- MOD_DESCRIPTION: A pack of Jokers
+--- BADGE_COLOUR: 708b91
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
-
+supported_languages = {["ru"] = true}
 function SMODS.INIT.JellyJokers()
   sendDebugMessage("Loaded JellyJokers~")
 
@@ -317,9 +318,37 @@ function SMODS.INIT.JellyJokers()
             G.localization.misc['poker_hands'][digits[i/2] .. ' Pair'] = digits[i/2] .. ' Pair'
         end
     end
-    
 
   init_localization()
+  local function updateLocalizationJelly(localizationTable, cardType)
+    for k, v in pairs(localizationTable) do
+      G.localization.descriptions[cardType][k] = v
+    end
+    
+    -- Update localization
+    for g_k, group in pairs(G.localization) do
+        if g_k == 'descriptions' then
+            for _, set in pairs(group) do
+                for _, center in pairs(set) do
+                    center.text_parsed = {}
+                    for _, line in ipairs(center.text) do
+                        center.text_parsed[#center.text_parsed + 1] = loc_parse_string(line)
+                    end
+                    center.name_parsed = {}
+                    for _, line in ipairs(type(center.name) == 'table' and center.name or {center.name}) do
+                        center.name_parsed[#center.name_parsed + 1] = loc_parse_string(line)
+                    end
+                    if center.unlock then
+                        center.unlock_parsed = {}
+                        for _, line in ipairs(center.unlock) do
+                            center.unlock_parsed[#center.unlock_parsed + 1] = loc_parse_string(line)
+                        end
+                    end
+                end
+            end
+        end
+    end
+  end
   updateLocalizationJelly(localization, "Joker")
   updateLocalizationJelly(food_localization, "Other")
   if supported_languages[G.SETTINGS.language] then
@@ -336,37 +365,37 @@ function SMODS.INIT.JellyJokers()
   ]]
      --
   local jokers = {
-    j_tarlton=          {order = 1,  unlocked = true, discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 4, cost = 20, name = "Tarlton", pos = {x=1,y=16}, soul_pos = {x=1, y=9}, set = "Joker", effect = "Copycat", cost_mult = 1.0, config = {},unlock_condition = {type = '', extra = '', hidden = true}}, 
-    j_pierrot=          {order = 2,  unlocked = true, discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 4, cost = 20, name = "Pierrot", pos = {x=5,y=16}, soul_pos = {x=0, y=9}, set = "Joker", effect = "", config = {}, unlock_condition = {type = '', extra = '', hidden = true}},
-    j_lipographic_jokr= {order = 3,  unlocked = true, discovered = true, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 5, name = "Lipographic Jokr", pos = {x=2,y=16}, set = "Joker", config = {extra = {mult = 10, sub = 5}}},
-    j_oops_1s=          {order = 4,  unlocked = true, discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 1, cost = 4, name = "Oops! All 1s", pos = {x=3,y=16}, set = "Joker", effect = "", config = {}, unlock_condition = {type = 'chip_score', chips = 10000}},
-    j_safari=           {order = 5,  unlocked = true, discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 3, cost = 7, name = "Safari Joker", pos = {x=4,y=16}, set = "Joker", effect = "", config = {}, unlock_condition = {type = 'modify_deck', extra = {count = 3, enhancement = 'Wild Card', e_key = 'm_wild'}}},
-    j_copycat=          {order = 6,  unlocked = true, discovered = true, blueprint_compat = true, eternal_compat = true, rarity = 3, cost = 10, name = "Copycat", pos = {x=0,y=16}, set = "Joker", effect = "Copycat", cost_mult = 1.0, config = {},unlock_condition = {type = 'win_custom'}},
-    j_pessimist=        {order = 7,  unlocked = true, discovered = true, blueprint_compat = false, eternal_compat = false, rarity = 3, cost = 10, name = "Pessimist", pos = {x=6,y=16}, set = "Joker", effect = "", config = {extra = 2}, unlock_condition = {type = 'win_custom'}},
-    j_prosopagnosia=    {order = 8,  unlocked = true,  discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 1, cost = 5, name = "Prosopagnosia", pos = {x=7,y=16}, set = "Joker", effect = "All face cards", cost_mult = 1.0, config = {}},
-    j_double_vision=    {order = 9,  unlocked = true,  discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 3, cost = 10, name = "Double Vision", pos = {x=8,y=16}, set = "Joker", effect = "", cost_mult = 1.0, config = {}},
-    j_scouter=          {order = 10,  unlocked = true,  discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 1, cost = 4, name = "Scouter Joker", pos = {x=9,y=16}, set = "Joker", effect = "", cost_mult = 1.0, config = {extra = 0}},
-    j_zeno=             {order = 11,  unlocked = true,  discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 3, cost = 8, name = "Zeno's Joker", pos = {x = 0, y = 17}, set = 'Joker', config = {}},
-    j_one_more=         {order = 12,  unlocked = true,  discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 1, cost = 8, name = "One More Time!", pos = {x = 1, y = 17}, set = 'Joker', config = {extra = {score=0, old_chips=0}}},
-    j_collector=        {order = 13,  unlocked = true,  discovered = true, blueprint_compat = true, eternal_compat = true, rarity = 3, cost = 7, name = "The Collector", pos = {x=2,y=17}, set = "Joker", effect = "Card Buff", cost_mult = 1.0, config = {extra = 1.5}},
-    j_buckleswasher=    {order = 14,  unlocked = true,  discovered = true, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 4, name = "Buckleswasher", pos = {x=3,y=17}, set = "Joker", effect = "Set Mult", cost_mult = 1.0, config = {mult = 1},unlock_condition = {type = 'c_jokers_sold', extra = 20}},
-    j_hatter=           {order = 15,  unlocked = true,  discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 2, cost = 7, name = "Mad Hatter",set = "Joker", config = {},  pos = {x=4,y=17}},
-    j_greener_pastures= {order = 16,  unlocked = true,  discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 2, cost = 8, name = "Greener Pastures",set = "Joker", config = {},  pos = {x=5,y=17}},
-    j_special_snowflake={order = 17,  unlocked = true,  discovered = true, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 6, name = "Special Snowflake",set = "Joker", config = {extra = 0.2},  pos = {x=6,y=17}, soul_pos={x=7, y=17}},
+    j_tarlton=          {order = 1,  unlocked = true, discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 4, cost = 20, name = "Tarlton", pos = {x=1,y=16}, soul_pos = {x=1, y=9}, set = "Joker", effect = "Copycat", cost_mult = 1.0, config = {},unlock_condition = {type = '', extra = '', hidden = true}}, 
+    j_pierrot=          {order = 2,  unlocked = true, discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 4, cost = 20, name = "Pierrot", pos = {x=5,y=16}, soul_pos = {x=0, y=9}, set = "Joker", effect = "", config = {}, unlock_condition = {type = '', extra = '', hidden = true}},
+    j_lipographic_jokr= {order = 3,  unlocked = true, discovered = false, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 5, name = "Lipographic Jokr", pos = {x=2,y=16}, set = "Joker", config = {extra = {mult = 10, sub = 5}}},
+    j_oops_1s=          {order = 4,  unlocked = true, discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 1, cost = 4, name = "Oops! All 1s", pos = {x=3,y=16}, set = "Joker", effect = "", config = {}, unlock_condition = {type = 'chip_score', chips = 10000}},
+    j_safari=           {order = 5,  unlocked = true, discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 3, cost = 7, name = "Safari Joker", pos = {x=4,y=16}, set = "Joker", effect = "", config = {}, unlock_condition = {type = 'modify_deck', extra = {count = 3, enhancement = 'Wild Card', e_key = 'm_wild'}}},
+    j_copycat=          {order = 6,  unlocked = true, discovered = false, blueprint_compat = true, eternal_compat = true, rarity = 3, cost = 10, name = "Copycat", pos = {x=0,y=16}, set = "Joker", effect = "Copycat", cost_mult = 1.0, config = {},unlock_condition = {type = 'win_custom'}},
+    j_pessimist=        {order = 7,  unlocked = true, discovered = false, blueprint_compat = false, eternal_compat = false, rarity = 3, cost = 10, name = "Pessimist", pos = {x=6,y=16}, set = "Joker", effect = "", config = {extra = 2}, unlock_condition = {type = 'win_custom'}},
+    j_prosopagnosia=    {order = 8,  unlocked = true,  discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 1, cost = 5, name = "Prosopagnosia", pos = {x=7,y=16}, set = "Joker", effect = "All face cards", cost_mult = 1.0, config = {}},
+    j_double_vision=    {order = 9,  unlocked = true,  discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 3, cost = 10, name = "Double Vision", pos = {x=8,y=16}, set = "Joker", effect = "", cost_mult = 1.0, config = {}},
+--    j_scouter=          {order = 10,  unlocked = true,  discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 1, cost = 4, name = "Scouter Joker", pos = {x=9,y=16}, set = "Joker", effect = "", cost_mult = 1.0, config = {extra = 0}},
+    j_zeno=             {order = 11,  unlocked = true,  discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 3, cost = 8, name = "Zeno's Joker", pos = {x = 0, y = 17}, set = 'Joker', config = {}},
+    j_one_more=         {order = 12,  unlocked = true,  discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 1, cost = 8, name = "One More Time!", pos = {x = 1, y = 17}, set = 'Joker', config = {extra = {score=0, old_chips=0}}},
+    j_collector=        {order = 13,  unlocked = true,  discovered = false, blueprint_compat = true, eternal_compat = true, rarity = 3, cost = 7, name = "The Collector", pos = {x=2,y=17}, set = "Joker", effect = "Card Buff", cost_mult = 1.0, config = {extra = 1.5}},
+    j_buckleswasher=    {order = 14,  unlocked = true,  discovered = false, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 4, name = "Buckleswasher", pos = {x=3,y=17}, set = "Joker", effect = "Set Mult", cost_mult = 1.0, config = {mult = 1},unlock_condition = {type = 'c_jokers_sold', extra = 20}},
+    j_hatter=           {order = 15,  unlocked = true,  discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 2, cost = 7, name = "Mad Hatter",set = "Joker", config = {},  pos = {x=4,y=17}},
+    j_greener_pastures= {order = 16,  unlocked = true,  discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 2, cost = 8, name = "Greener Pastures",set = "Joker", config = {},  pos = {x=5,y=17}},
+    j_special_snowflake={order = 17,  unlocked = true,  discovered = false, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 6, name = "Special Snowflake",set = "Joker", config = {extra = 0.2},  pos = {x=6,y=17}, soul_pos={x=7, y=17}},
     
-    j_glutton_joker=    {order = 18,  unlocked = true,  discovered = true, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 6, name = "Glutton Joker",set = "Joker", config = {extra = 1},  pos = {x=2,y=14}},
-    j_mineral_deposit=  {order = 19,  unlocked = true,  discovered = true, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 5, name = "Mineral Deposit",set = "Joker", config = {extra = 1},  pos = {x=1,y=14}},
-    j_brownie=          {order = 20,  unlocked = true,  discovered = true, blueprint_compat = true, eternal_compat = false, rarity = 1, cost = 4, name = "Two-Bite Brownie",set = "Joker", config = {extra = {retriggers=2, retrigger_mod=1}},  pos = {x=0,y=14}},
-    j_caviar=           {order = 21,  unlocked = true,  discovered = true, blueprint_compat = true, eternal_compat = false, rarity = 2, cost = 2, name = "Caviar",set = "Joker", config = {extra = {dollars = 5, dollar_mod = 1}},  pos = {x=9,y=15}},
-    j_chef_joker=       {order = 22,  unlocked = true,  discovered = true, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 5, name = "Chef Joker",set = "Joker", config = {},  pos = {x=8,y=15}},
-    j_pink_menace=      {order = 23,  unlocked = true,  discovered = true, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 3, name = "The Pink Menace",set = "Joker", config = {extra = {eaten = nil, val = 0}},  pos = {x=7,y=15}},
-    j_greedy_pot=       {order = 24,  unlocked = true,  discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 3, cost = 10, name = "Greedy Pot",set = "Joker", config = {},  pos = {x=6,y=15}},
-    j_magnate=          {order = 25,  unlocked = true,  discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 2, cost = 5, name = "Magnate",set = "Joker", config = {},  pos = {x=5,y=15}},
-    j_edition_eater=    {order = 26,  unlocked = true,  discovered = true, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 8, name = "Edition Eater",set = "Joker", config = {extra = {foil = 0.5, holo = 1, polychrome = 2, negative = 1.5, Xmult = 1}},  pos = {x=4,y=15}},
-    j_krampus=          {order = 27,  unlocked = true,  discovered = true, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 6, name = "Krampus",set = "Joker", config = {},  pos = {x=3,y=15}},
-    j_fridge=           {order = 28,  unlocked = true,  discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 2, cost = 3, name = "Fridge",set = "Joker", config = {},  pos = {x=2,y=15}},
-    j_furnace=          {order = 29,  unlocked = true,  discovered = true, blueprint_compat = false, eternal_compat = true, rarity = 3, cost = 6, name = "Furnace",set = "Joker", config = {},  pos = {x=1,y=15}},
-    j_wise_penny=       {order = 30,  unlocked = true,  discovered = true, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 7, name = "Wise Penny",set = "Joker", config = {extra = true},  pos = {x=0,y=15}},
+    j_glutton_joker=    {order = 18,  unlocked = true,  discovered = false, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 6, name = "Glutton Joker",set = "Joker", config = {extra = 1},  pos = {x=2,y=14}},
+    j_mineral_deposit=  {order = 19,  unlocked = true,  discovered = false, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 5, name = "Mineral Deposit",set = "Joker", config = {extra = 1},  pos = {x=1,y=14}},
+    j_brownie=          {order = 20,  unlocked = true,  discovered = false, blueprint_compat = true, eternal_compat = false, rarity = 1, cost = 4, name = "Two-Bite Brownie",set = "Joker", config = {extra = {retriggers=2, retrigger_mod=1}},  pos = {x=0,y=14}},
+    j_caviar=           {order = 21,  unlocked = true,  discovered = false, blueprint_compat = true, eternal_compat = false, rarity = 2, cost = 2, name = "Caviar",set = "Joker", config = {extra = {dollars = 5, dollar_mod = 1}},  pos = {x=9,y=15}},
+    j_chef_joker=       {order = 22,  unlocked = true,  discovered = false, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 5, name = "Chef Joker",set = "Joker", config = {},  pos = {x=8,y=15}},
+    j_pink_menace=      {order = 23,  unlocked = true,  discovered = false, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 3, name = "The Pink Menace",set = "Joker", config = {extra = {eaten = nil, val = 0}},  pos = {x=7,y=15}},
+    j_greedy_pot=       {order = 24,  unlocked = true,  discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 3, cost = 10, name = "Greedy Pot",set = "Joker", config = {},  pos = {x=6,y=15}},
+    j_magnate=          {order = 25,  unlocked = true,  discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 2, cost = 5, name = "Magnate",set = "Joker", config = {},  pos = {x=5,y=15}},
+    j_edition_eater=    {order = 26,  unlocked = true,  discovered = false, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 8, name = "Edition Eater",set = "Joker", config = {extra = {foil = 0.5, holo = 1, polychrome = 2, negative = 1.5, Xmult = 1}},  pos = {x=4,y=15}},
+    j_krampus=          {order = 27,  unlocked = true,  discovered = false, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 6, name = "Krampus",set = "Joker", config = {},  pos = {x=3,y=15}},
+    j_fridge=           {order = 28,  unlocked = true,  discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 2, cost = 3, name = "Fridge",set = "Joker", config = {},  pos = {x=2,y=15}},
+    j_furnace=          {order = 29,  unlocked = true,  discovered = false, blueprint_compat = false, eternal_compat = true, rarity = 3, cost = 6, name = "Furnace",set = "Joker", config = {},  pos = {x=1,y=15}},
+    j_wise_penny=       {order = 30,  unlocked = true,  discovered = false, blueprint_compat = true, eternal_compat = true, rarity = 2, cost = 7, name = "Wise Penny",set = "Joker", config = {extra = true},  pos = {x=0,y=15}},
   }
 
   -- Add sprites
@@ -424,7 +453,7 @@ function Card.calculate_joker(self, context)
   end
 
   local calc_ref = calculate_jokerref(self, context)
-  if calc_ref then
+  if calc_ref and type(calc_ref) == "table" then
         if calc_ref.message == localize('k_eaten_ex') or calc_ref.message == localize('k_drank_ex') or calc_ref.message == localize('k_extinct_ex') then
             G.GAME.foods_eaten = G.GAME.foods_eaten + 1
         end
@@ -1146,7 +1175,7 @@ function Card.generate_UIBox_ability_table(self)
           end
 
           local center = self.config.center
-          return generate_card_ui(center, nil, loc_vars, card_type, badges, hide_desc, main_start, main_end)
+          return generate_card_ui(center, nil, loc_vars, card_type, badges, hide_desc, main_start, main_end, card)
       end
   end
   return generate_UIBox_ability_tableref(self)
@@ -1309,6 +1338,31 @@ function Card.is_face(self, from_boss)
   if (next(find_joker("Prosopagnosia"))) then return end
   return is_face_ref(self, from_boss)
 end
+
+local function sortByOrder(t, arg1, arg2)
+    if t[arg2].order == nil then return true
+    elseif t[arg1].order == nil then return false
+    else
+      if t[arg1].order < t[arg2].order then return true
+      elseif t[arg1].order == t[arg2].order then return true
+      elseif t[arg1].order > t[arg2].order then return false
+      end
+    end
+  end
+
+local function pairsByOrder(t, f)
+    local a = {}
+    for n in pairs(t) do table.insert(a, n) end
+    table.sort(a, function(a, b) return sortByOrder(t, a, b) end)
+    local i = 0      -- iterator variable
+    local iter = function ()   -- iterator function
+      i = i + 1
+      if a[i] == nil then return nil
+      else return a[i], t[a[i]]
+      end
+    end
+    return iter
+  end
 
 function addJokersToPools(jokerTable, atlas)
   -- Add Jokers to center
@@ -1779,7 +1833,7 @@ function Card:open()
                         local edition = poll_edition('standard_edition'..G.GAME.round_resets.ante, edition_rate, true)
                         card:set_edition(edition)
                         local chosen_card = pseudorandom_element(G.deck.cards, pseudoseed('magnate_m'))
-                        local suit_prefix = string.sub(chosen_card.base.suit, 1, 1)..'_'
+                        local suit_prefix = SMODS.Suits[chosen_card.base.suit].card_key ..'_'
                         local rank_suffix = chosen_card.base.id
                         if rank_suffix < 10 then rank_suffix = tostring(rank_suffix)
                         elseif rank_suffix == 10 then rank_suffix = 'T'
@@ -1840,12 +1894,12 @@ function Card:open()
 end
 
 local generate_card_ui_ref = generate_card_ui
-function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end)
+function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end, card)
     local customCard = false
     if _c.name == 'Furnace' or _c.name == 'Krampus' or _c.name == "The Pink Menace" or _c.name == "Chef Joker" or _c.name == "Glutton Joker" or _c.name == "Fridge" or _c.name == "Wise Penny" then
         customCard = true
     end
-    if not customCard then return generate_card_ui_ref(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end) end
+    if not customCard then return generate_card_ui_ref(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end, card) end
     local first_pass = nil
     if not full_UI_table then 
         first_pass = true

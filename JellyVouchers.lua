@@ -3,6 +3,7 @@
 --- MOD_ID: JellyVouchers
 --- MOD_AUTHOR: [JamesTheJellyfish]
 --- MOD_DESCRIPTION: A set of Vouchers
+--- BADGE_COLOUR: 708b91
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
@@ -28,7 +29,40 @@ function SMODS.INIT.JellyVouchers()
 
   }
  
+
+
+
   init_localization()
+    
+  local function updateLocalizationJelly(localizationTable, cardType)
+    for k, v in pairs(localizationTable) do
+      G.localization.descriptions[cardType][k] = v
+    end
+    
+    -- Update localization
+    for g_k, group in pairs(G.localization) do
+        if g_k == 'descriptions' then
+            for _, set in pairs(group) do
+                for _, center in pairs(set) do
+                    center.text_parsed = {}
+                    for _, line in ipairs(center.text) do
+                        center.text_parsed[#center.text_parsed + 1] = loc_parse_string(line)
+                    end
+                    center.name_parsed = {}
+                    for _, line in ipairs(type(center.name) == 'table' and center.name or {center.name}) do
+                        center.name_parsed[#center.name_parsed + 1] = loc_parse_string(line)
+                    end
+                    if center.unlock then
+                        center.unlock_parsed = {}
+                        for _, line in ipairs(center.unlock) do
+                            center.unlock_parsed[#center.unlock_parsed + 1] = loc_parse_string(line)
+                        end
+                    end
+                end
+            end
+        end
+    end
+  end
   updateLocalizationJelly(localization, "Voucher")
   if supported_languages[G.SETTINGS.language] then
     local voucher_localization = assert(loadstring(love.filesystem.read(SMODS.findModByID("JellyUtil").path .. '/localization/' ..G.SETTINGS.language..'/vouchers.lua')))()
@@ -36,8 +70,8 @@ function SMODS.INIT.JellyVouchers()
   end
 
   local vouchers = {
-    v_dumbell        =   {order = 1,     discovered = true, unlocked = true, available = true, cost = 10, name = "Dumbell", pos = {x=0,y=0}, set = "Voucher", config = {extra = 0.125}},
-    v_barbell        =   {order = 2,     discovered = true, unlocked = true, available = true, cost = 10, name = "Barbell", pos = {x=0,y=1}, set = "Voucher", config = {extra = 0.25}, requires = {'v_dumbell'}},
+    v_dumbell        =   {order = 1,     discovered = false, unlocked = true, available = true, cost = 10, name = "Dumbell", pos = {x=0,y=0}, set = "Voucher", config = {extra = 0.125}},
+    v_barbell        =   {order = 2,     discovered = false, unlocked = true, available = true, cost = 10, name = "Barbell", pos = {x=0,y=1}, set = "Voucher", config = {extra = 0.25}, requires = {'v_dumbell'}},
   }
 
   -- Add sprites
@@ -108,12 +142,12 @@ function Card:apply_to_run(center)
 end
 
 local generate_card_ui_ref = generate_card_ui
-function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end)
+function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end, card)
     local customCard = false
     if _c.name == 'Barbell' or _c.name == 'Dumbell' then
         customCard = true
     end
-    if not customCard then return generate_card_ui_ref(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end) end
+    if not customCard then return generate_card_ui_ref(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end, card) end
     local first_pass = nil
     if not full_UI_table then 
         first_pass = true
@@ -231,7 +265,30 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
 end
 
 
-
+local function sortByOrder(t, arg1, arg2)
+    if t[arg2].order == nil then return true
+    elseif t[arg1].order == nil then return false
+    else
+      if t[arg1].order < t[arg2].order then return true
+      elseif t[arg1].order == t[arg2].order then return true
+      elseif t[arg1].order > t[arg2].order then return false
+      end
+    end
+  end
+  
+local function pairsByOrder(t, f)
+    local a = {}
+    for n in pairs(t) do table.insert(a, n) end
+    table.sort(a, function(a, b) return sortByOrder(t, a, b) end)
+    local i = 0      -- iterator variable
+    local iter = function ()   -- iterator function
+      i = i + 1
+      if a[i] == nil then return nil
+      else return a[i], t[a[i]]
+      end
+    end
+    return iter
+  end
 
 function addVouchersToPools(voucherTable, atlas)
   -- Add Jokers to center

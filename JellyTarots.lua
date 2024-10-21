@@ -3,6 +3,7 @@
 --- MOD_ID: JellyTarots
 --- MOD_AUTHOR: [JamesTheJellyfish]
 --- MOD_DESCRIPTION: Adds reverse tarot cards to the game.
+--- BADGE_COLOUR: 708b91
 
 ----------------------------------------------
 ------------MOD CODE -------------------------
@@ -268,9 +269,40 @@ function SMODS.INIT.JellyTarots()
     }
 
     G.localization.misc.v_dictionary.a_xchips = "X#1# Chips"
+     
+
+
     init_localization()
 
-
+    local function updateLocalizationJelly(localizationTable, cardType)
+        for k, v in pairs(localizationTable) do
+          G.localization.descriptions[cardType][k] = v
+        end
+        
+        -- Update localization
+        for g_k, group in pairs(G.localization) do
+            if g_k == 'descriptions' then
+                for _, set in pairs(group) do
+                    for _, center in pairs(set) do
+                        center.text_parsed = {}
+                        for _, line in ipairs(center.text) do
+                            center.text_parsed[#center.text_parsed + 1] = loc_parse_string(line)
+                        end
+                        center.name_parsed = {}
+                        for _, line in ipairs(type(center.name) == 'table' and center.name or {center.name}) do
+                            center.name_parsed[#center.name_parsed + 1] = loc_parse_string(line)
+                        end
+                        if center.unlock then
+                            center.unlock_parsed = {}
+                            for _, line in ipairs(center.unlock) do
+                                center.unlock_parsed[#center.unlock_parsed + 1] = loc_parse_string(line)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+      end
     updateLocalizationJelly(tarot_localization, "Tarot")
     updateLocalizationJelly(enhance_localization, "Enhanced")
     if supported_languages[G.SETTINGS.language] then
@@ -281,28 +313,28 @@ function SMODS.INIT.JellyTarots()
     end
 
     local tarots = {
-        c_world_rev=        {order = 23,    discovered = true, cost = 3, consumeable = true, name = "The Reverse World", pos = {x=8,y=5}, set = "Tarot", effect = "Suit Conversion", cost_mult = 1.0, config = {no_suit = 'Spades', max_highlighted = 3}},
-        c_judgement_rev=    {order = 24,    discovered = true, cost = 3, consumeable = true, name = "Reverse Judgement", pos = {x=9,y=5}, set = "Tarot", effect = "Random Joker", cost_mult = 1.0, config = {}},
-        c_sun_rev=          {order = 25,    discovered = true, cost = 3, consumeable = true, name = "The Reverse Sun", pos = {x=0,y=6}, set = "Tarot", effect = "Suit Conversion", cost_mult = 1.0, config = {no_suit = 'Hearts', max_highlighted = 3}},
-        c_moon_rev=         {order = 26,    discovered = true, cost = 3, consumeable = true, name = "The Reverse Moon", pos = {x=1,y=6}, set = "Tarot", effect = "Suit Conversion", cost_mult = 1.0, config = {no_suit = 'Clubs', max_highlighted = 3}},
-        c_star_rev=         {order = 27,    discovered = true, cost = 3, consumeable = true, name = "The Reverse Star", pos = {x=2,y=6}, set = "Tarot", effect = "Suit Conversion", cost_mult = 1.0, config = {no_suit = 'Diamonds', max_highlighted = 3}},
-        c_tower_rev=        {order = 28,    discovered = true, cost = 3, consumeable = true, name = "The Reverse Tower", pos = {x=3,y=6}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_coal', max_highlighted = 1}},
-        c_devil_rev=        {order = 29,    discovered = true, cost = 3, consumeable = true, name = "The Reverse Devil", pos = {x=4,y=6}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_fools_gold', max_highlighted = 1}},
-        c_temperance_rev=   {order = 30,    discovered = true, cost = 3, consumeable = true, name = "Reverse Temperance", pos = {x=5,y=6}, set = "Tarot", effect = "Consumable Payout", cost_mult = 1.0, config = {extra = 50, payout_mult = 5}},
-        c_death_rev=        {order = 31,    discovered = true, cost = 3, consumeable = true, name = "Reverse Death", pos = {x=6,y=6}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv='card', max_highlighted = 2}},
-        c_hanged_man_rev=   {order = 32,    discovered = true, cost = 3, consumeable = true, name = "The Reverse Hanged Man", pos = {x=7,y=6}, set = "Tarot", effect = "Card Addition", cost_mult = 1.0, config = {extra = 2}},
-        c_strength_rev=     {order = 33,    discovered = true, cost = 3, consumeable = true, name = "Reverse Strength", pos = {x=8,y=6}, set = "Tarot", effect = "Round Bonus", cost_mult = 1.0, config = {mod_conv = 'down_rank', max_highlighted = 2}},
-        c_wheel_of_fortune_rev={order=34,   discovered = true, cost = 3, consumeable = true, name = "The Reverse Wheel of Fortune", pos = {x=9,y=6}, set = "Tarot", effect = "Round Bonus", cost_mult = 1.0, config = {extra = 4, max_highlighted = 1}},
-        c_hermit_rev=       {order = 35,    discovered = true, cost = 3, consumeable = true, name = "The Reverse Hermit", pos = {x=0,y=7}, set = "Tarot", effect = "Dollar Halver", cost_mult = 1.0, config = {extra = 20}},
-        c_justice_rev=      {order = 36,    discovered = true, cost = 3, consumeable = true, name = "Reverse Justice", pos = {x=1,y=7}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_wooden', max_highlighted = 1}},
-        c_chariot_rev=      {order = 37,    discovered = true, cost = 3, consumeable = true, name = "The Reverse Chariot", pos = {x=2,y=7}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_brass', max_highlighted = 1}},
-        c_lovers_rev=       {order = 38,    discovered = true, cost = 3, consumeable = true, name = "The Reverse Lovers", pos = {x=3,y=7}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_blank', max_highlighted = 1}},
-        c_heirophant_rev=   {order = 39,    discovered = true, cost = 3, consumeable = true, name = "The Reverse Hierophant", pos = {x=4,y=7}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_bonus_rev', max_highlighted = 2}},
-        c_emperor_rev=      {order = 40,    discovered = true, cost = 3, consumeable = true, name = "The Reverse Emperor", pos = {x=5,y=7}, set = "Tarot", effect = "Round Bonus", cost_mult = 1.0, config = {tarots = 3}},
-        c_empress_rev=      {order = 41,    discovered = true, cost = 3, consumeable = true, name = "The Reverse Empress", pos = {x=6,y=7}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_mult_rev', max_highlighted = 2}},
-        c_high_priestess_rev={order =42,    discovered = true, cost = 3, consumeable = true, name = "The Reverse High Priestess", pos = {x=7,y=7}, set = "Tarot", effect = "Round Bonus", cost_mult = 1.0, config = {planets = 3, downgrade = 1}},
-        c_magician_rev=     {order = 43,    discovered = true, cost = 3, consumeable = true, name = "The Reverse Magician", pos = {x=8,y=7}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_unlucky', max_highlighted = 1}},
-        c_fool_rev=         {order = 44,    discovered = true, cost = 3, consumeable = true, name = "The Reverse Fool", pos = {x=9,y=7}, set = "Tarot", effect = "Disable Blind Effect", cost_mult = 1.0, config = {}},       
+        c_world_rev=        {order = 23,    discovered = false, cost = 3, consumeable = true, name = "The Reverse World", pos = {x=8,y=5}, set = "Tarot", effect = "Suit Conversion", cost_mult = 1.0, config = {no_suit = 'Spades', max_highlighted = 3}},
+        c_judgement_rev=    {order = 24,    discovered = false, cost = 3, consumeable = true, name = "Reverse Judgement", pos = {x=9,y=5}, set = "Tarot", effect = "Random Joker", cost_mult = 1.0, config = {}},
+        c_sun_rev=          {order = 25,    discovered = false, cost = 3, consumeable = true, name = "The Reverse Sun", pos = {x=0,y=6}, set = "Tarot", effect = "Suit Conversion", cost_mult = 1.0, config = {no_suit = 'Hearts', max_highlighted = 3}},
+        c_moon_rev=         {order = 26,    discovered = false, cost = 3, consumeable = true, name = "The Reverse Moon", pos = {x=1,y=6}, set = "Tarot", effect = "Suit Conversion", cost_mult = 1.0, config = {no_suit = 'Clubs', max_highlighted = 3}},
+        c_star_rev=         {order = 27,    discovered = false, cost = 3, consumeable = true, name = "The Reverse Star", pos = {x=2,y=6}, set = "Tarot", effect = "Suit Conversion", cost_mult = 1.0, config = {no_suit = 'Diamonds', max_highlighted = 3}},
+        c_tower_rev=        {order = 28,    discovered = false, cost = 3, consumeable = true, name = "The Reverse Tower", pos = {x=3,y=6}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_coal', max_highlighted = 1}},
+        c_devil_rev=        {order = 29,    discovered = false, cost = 3, consumeable = true, name = "The Reverse Devil", pos = {x=4,y=6}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_fools_gold', max_highlighted = 1}},
+        c_temperance_rev=   {order = 30,    discovered = false, cost = 3, consumeable = true, name = "Reverse Temperance", pos = {x=5,y=6}, set = "Tarot", effect = "Consumable Payout", cost_mult = 1.0, config = {extra = 50, payout_mult = 5}},
+        c_death_rev=        {order = 31,    discovered = false, cost = 3, consumeable = true, name = "Reverse Death", pos = {x=6,y=6}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv='card', max_highlighted = 2}},
+        c_hanged_man_rev=   {order = 32,    discovered = false, cost = 3, consumeable = true, name = "The Reverse Hanged Man", pos = {x=7,y=6}, set = "Tarot", effect = "Card Addition", cost_mult = 1.0, config = {extra = 2}},
+        c_strength_rev=     {order = 33,    discovered = false, cost = 3, consumeable = true, name = "Reverse Strength", pos = {x=8,y=6}, set = "Tarot", effect = "Round Bonus", cost_mult = 1.0, config = {mod_conv = 'down_rank', max_highlighted = 2}},
+        c_wheel_of_fortune_rev={order=34,   discovered = false, cost = 3, consumeable = true, name = "The Reverse Wheel of Fortune", pos = {x=9,y=6}, set = "Tarot", effect = "Round Bonus", cost_mult = 1.0, config = {extra = 4, max_highlighted = 1}},
+        c_hermit_rev=       {order = 35,    discovered = false, cost = 3, consumeable = true, name = "The Reverse Hermit", pos = {x=0,y=7}, set = "Tarot", effect = "Dollar Halver", cost_mult = 1.0, config = {extra = 20}},
+        c_justice_rev=      {order = 36,    discovered = false, cost = 3, consumeable = true, name = "Reverse Justice", pos = {x=1,y=7}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_wooden', max_highlighted = 1}},
+        c_chariot_rev=      {order = 37,    discovered = false, cost = 3, consumeable = true, name = "The Reverse Chariot", pos = {x=2,y=7}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_brass', max_highlighted = 1}},
+        c_lovers_rev=       {order = 38,    discovered = false, cost = 3, consumeable = true, name = "The Reverse Lovers", pos = {x=3,y=7}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_blank', max_highlighted = 1}},
+        c_heirophant_rev=   {order = 39,    discovered = false, cost = 3, consumeable = true, name = "The Reverse Hierophant", pos = {x=4,y=7}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_bonus_rev', max_highlighted = 2}},
+        c_emperor_rev=      {order = 40,    discovered = false, cost = 3, consumeable = true, name = "The Reverse Emperor", pos = {x=5,y=7}, set = "Tarot", effect = "Round Bonus", cost_mult = 1.0, config = {tarots = 3}},
+        c_empress_rev=      {order = 41,    discovered = false, cost = 3, consumeable = true, name = "The Reverse Empress", pos = {x=6,y=7}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_mult_rev', max_highlighted = 2}},
+        c_high_priestess_rev={order =42,    discovered = false, cost = 3, consumeable = true, name = "The Reverse High Priestess", pos = {x=7,y=7}, set = "Tarot", effect = "Round Bonus", cost_mult = 1.0, config = {planets = 3, downgrade = 1}},
+        c_magician_rev=     {order = 43,    discovered = false, cost = 3, consumeable = true, name = "The Reverse Magician", pos = {x=8,y=7}, set = "Tarot", effect = "Enhance", cost_mult = 1.0, config = {mod_conv = 'm_unlucky', max_highlighted = 1}},
+        c_fool_rev=         {order = 44,    discovered = false, cost = 3, consumeable = true, name = "The Reverse Fool", pos = {x=9,y=7}, set = "Tarot", effect = "Disable Blind Effect", cost_mult = 1.0, config = {}},       
     }
 
     local enhancements = {
@@ -378,7 +410,7 @@ function Card.generate_UIBox_ability_table(self)
         end
 
         local center = self.config.center
-        return generate_card_ui(center, nil, loc_vars, card_type, badges, hide_desc, main_start, main_end)
+        return generate_card_ui(center, nil, loc_vars, card_type, badges, hide_desc, main_start, main_end, card)
     end
     return generate_UIBox_ability_tableref(self)
 end
@@ -530,7 +562,7 @@ function Card.use_consumeable(self, area, copier)
             for i=1, #G.hand.highlighted do
                 G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.1,func = function()
                     local card = G.hand.highlighted[i]
-                    local suit_prefix = string.sub(card.base.suit, 1, 1)..'_'
+                    local suit_prefix = SMODS.Suits[card.base.suit].card_key..'_'
                     local rank_suffix = card.base.id == 2 and 14 or math.max(card.base.id-1, 2)
                     if rank_suffix < 10 then rank_suffix = tostring(rank_suffix)
                     elseif rank_suffix == 10 then rank_suffix = 'T'
@@ -664,7 +696,7 @@ function Card.use_consumeable(self, area, copier)
         base_consumeable = false
         local deletable_jokers = {}
         for k, v in pairs(G.jokers.cards) do
-            if not v.ability.eternal then 
+            if not v.ability.eternal and type(v.config.center.rarity) == "number" then 
                 local repetitions = math.max(1, (3 - v.config.center.rarity)*2)
                 for i = 1,repetitions do
                     deletable_jokers[#deletable_jokers + 1] = v
@@ -826,6 +858,30 @@ function Card.update(self, dt)
     end
 end
 
+local function sortByOrder(t, arg1, arg2)
+    if t[arg2].order == nil then return true
+    elseif t[arg1].order == nil then return false
+    else
+      if t[arg1].order < t[arg2].order then return true
+      elseif t[arg1].order == t[arg2].order then return true
+      elseif t[arg1].order > t[arg2].order then return false
+      end
+    end
+  end
+  
+  local function pairsByOrder(t, f)
+    local a = {}
+    for n in pairs(t) do table.insert(a, n) end
+    table.sort(a, function(a, b) return sortByOrder(t, a, b) end)
+    local i = 0      -- iterator variable
+    local iter = function ()   -- iterator function
+      i = i + 1
+      if a[i] == nil then return nil
+      else return a[i], t[a[i]]
+      end
+    end
+    return iter
+  end
 
 function addTarotsToPools(tarotTable, atlas)
     -- Add Jokers to center
@@ -996,7 +1052,7 @@ function card_eval_status_text(card, eval_type, amt, percent, dir, extra)
     local colour = config.colour or (extra and extra.colour) or ( G.C.FILTER )
     local extrafunc = nil
 
-    if eval_type == 'chips' then 
+    if type(amt) == "number" and eval_type == 'chips' then 
         sound = 'chips1'
         amt = amt
         colour = G.C.CHIPS
@@ -1064,7 +1120,7 @@ end
 
 
 local generate_card_ui_ref = generate_card_ui
-function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end)
+function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end, card)
     local customCard = false
     if _c.name == 'The Reverse Fool' or _c.name == 'The Reverse Magician' or _c.name == 'The Reverse High Priestess' or _c.name == 'The Reverse Emperor' or _c.name == 'The Reverse Empress' or _c.name == 'The Reverse Hierophant' or _c.name == 'The Reverse Lovers' or _c.name == 'The Reverse Chariot' or _c.name == 'Reverse Justice' or _c.name == 'The Reverse Hermit' or _c.name == 'The Reverse Wheel of Fortune' or _c.name == 'Reverse Strength' or _c.name == 'The Reverse Hanged Man' or _c.name == 'Reverse Death' or _c.name == 'Reverse Temperance' or _c.name == 'The Reverse Devil' or _c.name == 'The Reverse Tower' or _c.name == 'The Reverse Star' or _c.name == 'The Reverse Moon' or _c.name == 'The Reverse Sun' or _c.name == 'The Reverse Judgement' or _c.name == 'The Reverse World' then
         customCard = true
@@ -1072,7 +1128,7 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
     if _c.name == 'Coal Card' or _c.name == 'Blank Card' or _c.effect == 'Wooden Card' or _c.effect == 'Brass Card' or _c.effect == 'Hand Mult Card' or _c.effect == 'Hand Bonus Card' or _c.effect == "Fool's Gold Card" or _c.effect == 'Unlucky Card' then
         customCard = true
     end
-    if not customCard then return generate_card_ui_ref(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end) end
+    if not customCard then return generate_card_ui_ref(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end, card) end
     local first_pass = nil
     if not full_UI_table then 
         first_pass = true
